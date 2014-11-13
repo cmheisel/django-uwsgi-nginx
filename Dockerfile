@@ -29,16 +29,27 @@ RUN easy_install pip
 # install uwsgi now because it takes a little while
 RUN pip install uwsgi
 
-# install our code
-ONBUILD ADD . /home/docker/code/
-ONBUILD WORKDIR /home/docker/code/
-ONBUILD RUN pip install -r requirements.txt
+WORKDIR /var/app
 
-# setup all the configfiles
+# Do this set of steps so we test the image
+ADD . /var/app
+WORKDIR /var/app
+RUN pip install -r requirements.txt
+RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+RUN rm /etc/nginx/sites-enabled/default
+RUN ln -s /var/app/configs/nginx-app.conf /etc/nginx/sites-enabled/
+RUN ln -s /var/app/configs/supervisor-app.conf /etc/supervisor/conf.d/
+
+
+
+# install the downstream users code and configs
+ONBUILD ADD . /var/app
+ONBUILD WORKDIR /var/app
+ONBUILD RUN pip install -r requirements.txt
 ONBUILD RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 ONBUILD RUN rm /etc/nginx/sites-enabled/default
-ONBUILD RUN ln -s /home/docker/code/configs/nginx-app.conf /etc/nginx/sites-enabled/
-ONBUILD RUN ln -s /home/docker/code/configs/supervisor-app.conf /etc/supervisor/conf.d/
+ONBUILD RUN ln -s /var/app/configs/nginx-app.conf /etc/nginx/sites-enabled/
+ONBUILD RUN ln -s /var/app/configs/supervisor-app.conf /etc/supervisor/conf.d/
 
 expose 80
 cmd ["supervisord", "-n"]
