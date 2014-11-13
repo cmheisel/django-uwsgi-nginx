@@ -17,8 +17,11 @@ Feel free to clone this and modify it to your liking. And feel free to
 contribute patches.
 
 ### Build and run
-* docker build -t pywebapp .
-* docker run -d pywebapp
+* docker build -t cmheisel/pywebapp ./pywebapp
+* fig up
+* #santiy checky
+* docker build -t cmheisel/pywebapp:vN
+* docker push
 
 ### How to insert your application
 
