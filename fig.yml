@@ -1,0 +1,7 @@
+web:
+  build: .
+  command: supervisord -n
+  volumes:
+    - .:/var/app
+  ports:
+    - "80:80"
